@@ -24,7 +24,7 @@ def render():
 
     st.divider()
 
-    if st.button("✨ Generate Draft Report", type="primary"):
+    if st.button("✨ Generate Draft Report", type="primary", key="s4_generate"):
         file_names = [f.name for f in uploaded] if uploaded else []
         with st.spinner("Generating draft report…"):
             st.session_state.draft_report = generate_draft(eid, file_names)
@@ -36,6 +36,7 @@ def render():
             value=st.session_state.draft_report,
             height=450,
             label_visibility="collapsed",
+            key="s4_report_text",
         )
         st.download_button(
             "⬇ Download Report (.txt)",
@@ -43,8 +44,9 @@ def render():
             file_name=f"{eid}_draft_report.txt",
             mime="text/plain",
             type="primary",
+            key="dl_report_txt",
         )
 
-    if st.button("← Back"):
+    if st.button("← Back", key="s4_back"):
         st.session_state.step = 3
         st.rerun()

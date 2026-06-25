@@ -15,7 +15,7 @@ def render():
 
     col1, _ = st.columns([1, 5])
     with col1:
-        search = st.button("Search", type="primary", use_container_width=True)
+        search = st.button("Search", type="primary", key="s1_search")
 
     if search:
         if entity_id.strip():
@@ -28,6 +28,6 @@ def render():
 
     if st.session_state.entity_valid:
         st.success(f"Entity **{st.session_state.entity_id}** is loaded. Proceed to the next step.")
-        if st.button("Next →", type="primary"):
+        if st.button("Next →", type="primary", key="s1_next"):
             st.session_state.step = 2
             st.rerun()

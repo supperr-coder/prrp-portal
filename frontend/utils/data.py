@@ -77,5 +77,12 @@ def to_excel_bytes(entity_id: str) -> bytes:
     return buf.getvalue()
 
 
+def to_excel_bytes_gst(df: pd.DataFrame, year: int) -> bytes:
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        df.to_excel(writer, sheet_name=f"GST {year}", index=False)
+    return buf.getvalue()
+
+
 def to_csv_bytes(df: pd.DataFrame) -> bytes:
     return df.to_csv(index=False).encode()

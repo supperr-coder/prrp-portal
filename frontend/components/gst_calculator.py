@@ -1,6 +1,6 @@
 """Step 3 — GST registration calculator."""
 import streamlit as st
-from frontend.utils.data import compute_gst, to_csv_bytes
+from frontend.utils.data import compute_gst, to_excel_bytes_gst
 
 GST_THRESHOLD = 1_000_000
 
@@ -9,30 +9,23 @@ def render():
     eid = st.session_state.entity_id
     st.markdown('<div class="section-title">GST Registration Calculator</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-sub">Revenue breakdown by calendar year for GST threshold assessment.</div>',
+        '<div class="section-sub">Select a calendar year and calculate the GST breakdown.</div>',
         unsafe_allow_html=True,
     )
 
-    col_a, _ = st.columns([2, 4])
-    with col_a:
-        year = st.selectbox("Calendar Year", options=[2022, 2023, 2024, 2025], index=2)
-        calc = st.button("Calculate", type="primary")
+    year = st.selectbox("Calendar Year", options=[2022, 2023, 2024, 2025], index=2, key="gst_year")
 
-    if calc or st.session_state.gst_results is not None:
+    if st.button("Calculate", type="primary", key="gst_calc"):
         df = compute_gst(eid, year)
-        st.session_state.gst_results = df
-
-        gst_col = [c for c in df.columns if "GST" in c][0]
+        gst_col   = [c for c in df.columns if "GST" in c][0]
+        total_gst = df.loc[df["Quarter"].str.startswith("TOTAL"), gst_col].values[0]
+        total_rev = df.loc[df["Quarter"].str.startswith("TOTAL"), "Total Revenue ($)"].values[0]
 
         def highlight_total(row):
             style = "background-color: #e8f0fe; font-weight: bold"
             return [style if "TOTAL" in str(row["Quarter"]) else "" for _ in row]
 
-        st.dataframe(df.style.apply(highlight_total, axis=1),
-                     use_container_width=True, hide_index=True)
-
-        total_gst = df.loc[df["Quarter"].str.startswith("TOTAL"), gst_col].values[0]
-        total_rev = df.loc[df["Quarter"].str.startswith("TOTAL"), "Total Revenue ($)"].values[0]
+        st.dataframe(df.style.apply(highlight_total, axis=1), width="stretch", hide_index=True)
 
         threshold_hit = total_rev >= GST_THRESHOLD
         st.info(
@@ -44,18 +37,19 @@ def render():
         )
 
         st.download_button(
-            "⬇ Download GST Breakdown CSV",
-            data=to_csv_bytes(df),
-            file_name=f"{eid}_gst_{year}.csv",
-            mime="text/csv",
+            "⬇ Download GST Breakdown (.xlsx)",
+            data=to_excel_bytes_gst(df, year),
+            file_name=f"{eid}_gst_{year}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key="dl_gst_excel",
         )
 
     col1, col2 = st.columns([1, 1])
     with col1:
-        if st.button("← Back"):
+        if st.button("← Back", key="s3_back"):
             st.session_state.step = 2
             st.rerun()
     with col2:
-        if st.button("Next →", type="primary"):
+        if st.button("Next →", type="primary", key="s3_next"):
             st.session_state.step = 4
             st.rerun()

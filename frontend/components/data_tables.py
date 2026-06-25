@@ -21,21 +21,24 @@ def render():
 
     with tab_inc:
         df = get_income_data(eid)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, width="stretch", hide_index=True)
         st.download_button("⬇ Download Income CSV", data=to_csv_bytes(df),
-                           file_name=f"{eid}_income.csv", mime="text/csv")
+                           file_name=f"{eid}_income.csv", mime="text/csv",
+                           key="dl_income_csv")
 
     with tab_prop:
         df = get_property_data(eid)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, width="stretch", hide_index=True)
         st.download_button("⬇ Download Property CSV", data=to_csv_bytes(df),
-                           file_name=f"{eid}_property.csv", mime="text/csv")
+                           file_name=f"{eid}_property.csv", mime="text/csv",
+                           key="dl_property_csv")
 
     with tab_ten:
         df = get_tenancy_data(eid)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, width="stretch", hide_index=True)
         st.download_button("⬇ Download Tenancy CSV", data=to_csv_bytes(df),
-                           file_name=f"{eid}_tenancy.csv", mime="text/csv")
+                           file_name=f"{eid}_tenancy.csv", mime="text/csv",
+                           key="dl_tenancy_csv")
 
     st.divider()
     st.download_button(
@@ -44,14 +47,15 @@ def render():
         file_name=f"{eid}_data.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         type="primary",
+        key="dl_all_excel",
     )
 
     col1, col2 = st.columns([1, 1])
     with col1:
-        if st.button("← Back"):
+        if st.button("← Back", key="s2_back"):
             st.session_state.step = 1
             st.rerun()
     with col2:
-        if st.button("Next →", type="primary"):
+        if st.button("Next →", type="primary", key="s2_next"):
             st.session_state.step = 3
             st.rerun()

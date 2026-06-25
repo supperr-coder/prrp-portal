@@ -23,7 +23,6 @@ _DEFAULTS = {
     "step":         1,
     "entity_id":    "",
     "entity_valid": False,
-    "gst_results":  None,
     "draft_report": "",
 }
 for _k, _v in _DEFAULTS.items():
@@ -43,13 +42,8 @@ if not st.session_state.entity_valid and st.session_state.step > 1:
     st.session_state.step = 1
 
 # ── Step router ───────────────────────────────────────────────────────────────
-with st.container():
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-
-    match st.session_state.step:
-        case 1: entity_lookup.render()
-        case 2: data_tables.render()
-        case 3: gst_calculator.render()
-        case 4: report_generator.render()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+match st.session_state.step:
+    case 1: entity_lookup.render()
+    case 2: data_tables.render()
+    case 3: gst_calculator.render()
+    case 4: report_generator.render()
