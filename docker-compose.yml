@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data   # mount sample/uploaded data
+    # depends_on:
+    #   - backend
+
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.backend
+  #   ports:
+  #     - "8000:8000"
+  #   env_file:
+  #     - .env
